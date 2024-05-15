@@ -21,25 +21,21 @@ void plot_single_energy() {
         double meanV2 = p_v2->GetMean(2); // Getting the mean y-value
         double meanV2Error = p_v2->GetMeanError(2); // Getting the error of the mean y-value
 
-        // Add the data point to the graph
         graph->SetPoint(centrality - 1, centrality, meanV2);
         graph->SetPointError(centrality - 1, 0, meanV2Error);
 
         file->Close();
     }
 
-    // Customize the graph appearance
     graph->SetTitle(Form("%d GeV", energy));
     graph->GetXaxis()->SetTitle("Centrality");
     graph->GetYaxis()->SetTitle("Mean v2");
     graph->SetMarkerStyle(20);
     graph->SetMarkerSize(1.5);
 
-    // Draw the graph
     canvas->cd();
     graph->Draw("AP");
 
-    // Save or display the plot
     canvas->Print(Form("%dGeV_v2.png", energy));
 
 }
