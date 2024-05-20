@@ -26,28 +26,44 @@ using namespace std;
 #include "TLorentzVector.h"
 #include <thread>
 #include <vector>
+#include <algorithm>
 
 const float PI = TMath::Pi();
 const float pt_trig_up = 2;
 const float pt_trig_lo = .15;
 const float EtaCut = 1.0;
-const float cenDef[9] = {12.86,12.02,11.13,10.17,9.1,7.89,6.44,4.56,3.23};//27 GeV Au+Au
-        //{13.14,12.29,11.38,10.39,9.29,8.05,6.57,4.65,3.29};   // 200 GeV Au+Au
+// const float cenDef27[9] = {12.86,12.02,11.13,10.17,9.1,7.89,6.44,4.56,3.23};//27 GeV Au+Au
+const float cenDef27[9] = {12.85, 12.02, 11.14, 10.17, 9.1, 7.88, 6.44, 4.56, 3.24};
+const float cenDef19[9] = {12.83, 12, 11.12, 10.15, 9.08, 7.85, 6.42, 4.54, 3.2};
+const float cenDef7[9] = {12.81, 11.98, 11.1, 10.13, 9.07, 7.86, 6.41, 4.52, 3.2};
 
+//{13.14,12.29,11.38,10.39,9.29,8.05,6.57,4.65,3.29};   // 200 GeV Au+Au
+//{12.83, 12, 11.12, 10.15, 9.08, 7.85, 6.42, 4.54, 3.2} //19Gev-19M
+//{12.85, 12.02, 11.14, 10.17, 9.1, 7.88, 6.44, 4.56, 3.24} //27GeV-10M-2
+//{12.81, 11.98, 11.1, 10.13, 9.07, 7.86, 6.41, 4.52, 3.2} //7GeV-8k
 const Int_t total_jobs = 10;//this is to control the portion of data you prefer to run, data format is  xxx[job][min]1.root
 const Int_t total_min = 10;//this is to control the portion of data you prefer to run
 
-int energy = 0;
-string data_path = "";
 // string data_path = "/media/Disk_YIN/AMPT-7GeV/7GeV-8k";
 // /media/Disk_YIN/AMPT-27GeV/27GeV-10M-2/
+// /media/Disk_YIN/AMPT-19GeV/19GeV-19M
+// /media/Disk_YIN/AMPT-7GeV/7GeV-8k/
 void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min = 1){    //main_function
         TStopwatch timer; // Times the current min
         timer.Start();
         TStopwatch timer2; // Times every 10000 events
         timer2.Start();
-        energy = e;
-        data_path = path;
+        float cenDef[9];
+        const float* cen_index;
+        if (e == 27) cen_index = cenDef27;
+        else if (e == 19) cen_index = cenDef19;
+        else if (e == 7) cen_index = cenDef7;
+        else std::cerr << "Invalid energy!" << std::endl;
+        copy(cen_index, cen_index+9, cenDef);
+        for (float c : cenDef)
+        {
+                cout<<c<<endl;
+        }
         cout<<job<<"\t"<<min<<endl;
 
         TChain* chain = new TChain("tree");
@@ -56,7 +72,7 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
         // Wherever your data is stored
         // sprintf(fname_in1,"/media/Disk_YIN/AMPT-27GeV/v27-9977/*%d%d1.root",job,min);//one data set
         // sprintf(fname_in1,"/media/Disk_YIN/AMPT-7GeV/7GeV-8k/*%d%d1.root",job,min);//one data set
-        sprintf(fname_in1,"%s*%d%d1.root",data_path.c_str(), job,min);//one data set
+        sprintf(fname_in1,"%s*%d%d1.root",path.c_str(), job,min);//one data set
 
         // nfile counts number of files ending in "[job][min].root"
         nfile += chain->Add(fname_in1); 
@@ -65,7 +81,7 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
         cout<<"# entries in chain: "<<chain->GetEntries()<<endl;
 
         char fname_out[200];
-        sprintf(fname_out,"cen%d.%dGeVAMPT_job%d%02d.root",cen,energy,job,min);
+        sprintf(fname_out,"cen%d.%dGeVAMPT_job%d%02d.root",cen,e,job,min);
         TFile fout(fname_out,"NEW");
         if(fout.IsZombie() || !fout.IsOpen()) {
                 std::cout<<"File already exists: "<<fname_out<<std::endl;
@@ -144,6 +160,7 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
 
                         if(PID!= 211 && PID!=-211 ) continue;//only pions
                         if(Pt > pt_trig_up || Pt < pt_trig_lo) continue;
+                        if(Eta > EtaCut || Eta < -1*EtaCut) continue; // -1 < eta < 1
 
                 //add whatever your analysis here, i.e.
                         float v2a =  cos(2.*Phi - 2.*psi)*100;
@@ -168,8 +185,6 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
 
 void file_looper(int e = 0, string path = "", Int_t centrality_select = 1, Int_t job_select = 0)
 {
-        energy = e;
-        data_path = path;
         static Int_t min_select = 0;
         // TStopwatch timer; // Times the current min
         
@@ -184,10 +199,10 @@ void file_looper(int e = 0, string path = "", Int_t centrality_select = 1, Int_t
                 // Directory where the data will be stored
                 char folder_name[200];
                 // sprintf(folder_name, "/media/Disk_YIN/Andrew/New_Cuts/new_cen%dresults_newCuts",centrality_select);
-                sprintf(folder_name, "/media/Disk_YIN/Andrew/New_Cuts/cen%d_%dGeV",centrality_select, energy);
+                sprintf(folder_name, "/media/Disk_YIN/Andrew/New_Cuts/cen%d_%dGeV",centrality_select, e);
                 // Command to create the directory if it doesn't exist
                 char create_folder[200];
-                sprintf(create_folder, "mkdir /media/Disk_YIN/Andrew/New_Cuts/cen%d_%dGeV",centrality_select, energy);
+                sprintf(create_folder, "mkdir /media/Disk_YIN/Andrew/New_Cuts/cen%d_%dGeV",centrality_select, e);
                 gSystem->Exec(create_folder);
                 gSystem->cd(folder_name);
 
