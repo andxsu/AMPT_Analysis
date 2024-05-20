@@ -1,0 +1,52 @@
+1. This is a sample code for running AMPT
+       Sample_code.cpp
+You can work on 27 GeV data set first, and use for other datasets.
+Check #49, to change the input data file 
+Check #58, 171, 175, 191 to change the output root file namd and directory
+
+Each input data has roughly 2000 events, each event represents Au+Au collision
+at different centrality (a random beam impactor of b); Thus, the output files
+are categorized by the "centrality" = 0-5% (cen=9) means b=0 fm, most central events;
+centrality = 70-80% (cen=1) means b ~ 70%*2*Radius of Au, most peripheral case.
+
+To test the code, run on cen = 5, mid-central events, 30-40% centrality first.
+
+2.To test the code:
+root -b -q Sample_code.cpp
+
+then you may start to write your own anaysis.
+
+
+3. if you are sure that the code works well, loop over files
+bash run.sh
+
+
+4. download
+scp -r zhiwanxu@169.232.156.216:/media/Disk_YIN/AMPT-27GeV/cen5.AMPT_Correlation_job100.root .
+
+upload
+scp -r Sample_code_test.cpp zhiwanxu@169.232.156.216:/media/Disk_YIN/AMPT-27GeV/
+
+
+
+ I hope both of you have access to our local machine Dingo.
+ I prepared some sample code to run the AMPT model, here:
+    /media/Disk_YIN/AMPT-27GeV/analysis-zhiwan/Sample_code.cpp
+
+ please check the readme file in the directory:
+   /media/Disk_YIN/AMPT-27GeV/analysis-zhiwan/readme
+
+ First, you can create a working directory in Disk_YIN because the space is larger here.
+ then, copy the "Sample_code.cpp" and "run.csh" to your working directory,
+ test the code, play with it a bit, and we may discuss it before you start your analysis.
+
+
+ For Andrew, we can start calculating the v2 for cen1-cen9 with psi=0,
+ at 27 GeV, 7 GeV, and 11 GeV.
+ The 11 GeV data has not yet been uploaded, so I hope you can start the 27 GeV first.
+
+Based on what we discussed yesterday, I hope you can first calculate v2 at 27 GeV for centrality 1 (70-80%).
+ After you analyze the full set of data, you can merge the root files with
+   /media/Disk_YIN/AMPT-27GeV/analysis-zhiwan/Merge
+ Again, first copy this directory to your workspace,
+and then check the readme file and you will see the details.

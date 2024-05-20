@@ -26,17 +26,27 @@ TChain *chain = new TChain("tree");
 char fname[200],fname2[200];
 //sprintf(fname,"/star/data01/pwg/zhiwanxu/AMPT_run/7GeV-minbias/output/7GeV/data*.root");
 //sprintf(fname,"/star/data01/pwg/zhiwanxu/AMPT_run/19GeV-minbias/output/19GeV/data*.root");
-//chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/14GeV-minbias/output/14GeV/data*.root");
-chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/clean/200GeV-cleaned/200GeV-1490/data*.root");
-//sprintf(fname,"/star/data01/pwg/zhiwanxu/AMPT_run/clean/27GeV-cleaned/27GeV-500events/data*.root");
-//chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/clean/27GeV-cleaned/27GeV-500events/data*.root");
+// chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/14GeV-minbias/output/14GeV/data*.root");
+// chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/clean/200GeV-cleaned/200GeV-1490/data*.root");
+// sprintf(fname,"/star/data01/pwg/zhiwanxu/AMPT_run/clean/27GeV-cleaned/27GeV-500events/data*.root");
+// chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/clean/27GeV-cleaned/27GeV-500events/data*.root");
 //chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/clean/27GeV-cleaned/27GeV-5kevents-1/data*.root");
 //chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/clean/27GeV-cleaned/27GeV-5kevents-2/data*.root");
 //chain->Add("/star/data01/pwg/zhiwanxu/AMPT_run/clean/27GeV-cleaned/27GeV-data10M/data*.root");
+
+// sprintf(fname, "/media/Disk_YIN/AMPT-7GeV/7GeV-8k/data*.root");
+// chain->Add("/media/Disk_YIN/AMPT-7GeV/7GeV-8k/data_12*.root");
+
+// sprintf(fname, "/media/Disk_YIN/AMPT-19GeV/19GeV-19M/data*.root");
+// chain->Add("/media/Disk_YIN/AMPT-19GeV/19GeV-19M/data_12*.root");
+
+sprintf(fname, "/media/Disk_YIN/AMPT-27GeV/27GeV-10M-2/data*.root");
+chain->Add("/media/Disk_YIN/AMPT-27GeV/27GeV-10M-2/data_12*.root");
+
 int Nevent = chain->GetEntries();
 
         for(int i=0;i<Nevent;i++) {
-                if((i+1)%1000==0) cout<<"Processing entry == "<< i+1 <<" == out of "<<Nevent<<".\n";
+                // if((i+1)%1000==0) cout<<"Processing entry == "<< i+1 <<" == out of "<<Nevent<<".\n"; //if piping to stdout
                 chain->GetEntry(i);
                 TLeaf* leaf_b   = chain->GetLeaf("imp");
 		TLeaf* leaf_Np_p= chain->GetLeaf("npp");

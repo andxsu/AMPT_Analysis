@@ -1,4 +1,5 @@
 #!/bin/bash
+# energy, path
 arg1=$1
 arg2=$2
 rm -rf New_Cuts
