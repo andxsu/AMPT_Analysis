@@ -60,10 +60,6 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
         else if (e == 7) cen_index = cenDef7;
         else std::cerr << "Invalid energy!" << std::endl;
         copy(cen_index, cen_index+9, cenDef);
-        for (float c : cenDef)
-        {
-                cout<<c<<endl;
-        }
         cout<<job<<"\t"<<min<<endl;
 
         TChain* chain = new TChain("tree");

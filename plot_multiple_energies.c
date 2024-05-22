@@ -31,14 +31,13 @@ void plot_multiple_energies() {
             double meanV2Error = p_v2->GetMeanError(2); // Getting the error of the mean y-value
 
             // Add the data point to the graph
-            graph->SetPoint(centrality - 1, centrality, meanV2);
+            graph->SetPoint(centrality - 1, centrality*10, meanV2);
             graph->SetPointError(centrality - 1, 0, meanV2Error);
-
             file->Close();
         }
 
         graph->SetTitle("v2 vs Centrality");
-        graph->GetXaxis()->SetTitle("Centrality");
+        graph->GetXaxis()->SetTitle("Centrality (%)");
         graph->GetYaxis()->SetTitle("v2");
         graph->SetMarkerStyle(marker_style);
         graph->SetMarkerColor(colors[color_index]);

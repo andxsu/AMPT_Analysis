@@ -1,7 +1,7 @@
 void plot_single_energy() {
     TCanvas *canvas = new TCanvas("canvas", "Mean v2 vs Centralities", 800, 600);
     TGraphErrors *graph = new TGraphErrors();
-    int energy = 7;
+    int energy = 19;
     for (int centrality = 1; centrality <= 9; ++centrality) {
         TString filename = Form("Merge/cen%d_%dGeV.merged.root", centrality, energy);
         TFile *file = TFile::Open(filename);
