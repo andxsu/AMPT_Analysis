@@ -1,7 +1,7 @@
 void plot_single_energy() {
     TCanvas *canvas = new TCanvas("canvas", "Mean v2 vs Centralities", 800, 600);
     TGraphErrors *graph = new TGraphErrors();
-    int energy = 19;
+    int energy = 14;
     for (int centrality = 1; centrality <= 9; ++centrality) {
         TString filename = Form("Merge/cen%d_%dGeV.merged.root", centrality, energy);
         TFile *file = TFile::Open(filename);
@@ -17,9 +17,8 @@ void plot_single_energy() {
             continue;
         }
 
-        // Extract mean v2 and its error for this centrality
-        double meanV2 = p_v2->GetMean(2); // Getting the mean y-value
-        double meanV2Error = p_v2->GetMeanError(2); // Getting the error of the mean y-value
+        double meanV2 = p_v2->GetMean(2); 
+        double meanV2Error = p_v2->GetMeanError(2); 
 
         graph->SetPoint(centrality - 1, centrality, meanV2);
         graph->SetPointError(centrality - 1, 0, meanV2Error);

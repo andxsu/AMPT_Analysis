@@ -40,9 +40,13 @@ char fname[200],fname2[200];
 // sprintf(fname, "/media/Disk_YIN/AMPT-19GeV/19GeV-19M/data*.root");
 // chain->Add("/media/Disk_YIN/AMPT-19GeV/19GeV-19M/data_12*.root");
 
-sprintf(fname, "/media/Disk_YIN/AMPT-27GeV/27GeV-10M-2/data*.root");
-chain->Add("/media/Disk_YIN/AMPT-27GeV/27GeV-10M-2/data_12*.root");
+// sprintf(fname, "/media/Disk_YIN/AMPT-27GeV/27GeV-10M-2/data*.root");
+// chain->Add("/media/Disk_YIN/AMPT-27GeV/27GeV-10M-2/data_12*.root");
+sprintf(fname, "/media/Disk_YIN/AMPT-200GeV/200GeV-cleaned/200GeV-data2055/data*.root");
+chain->Add("/media/Disk_YIN/AMPT-200GeV/200GeV-cleaned/200GeV-data2055/data_1*.root");
 
+// sprintf(fname, "/media/Disk_YIN/AMPT-14GeV/14GeV-cleaned/14GeV-8k/data*.root");
+// chain->Add("/media/Disk_YIN/AMPT-14GeV/14GeV-cleaned/14GeV-8k/data_12*.root");
 int Nevent = chain->GetEntries();
 
         for(int i=0;i<Nevent;i++) {

@@ -27,27 +27,33 @@ using namespace std;
 #include <thread>
 #include <vector>
 #include <algorithm>
+#include "TDatabasePDG.h"
 
 const float PI = TMath::Pi();
 const float pt_trig_up = 2;
-const float pt_trig_lo = .15;
+const float pt_trig_lo = .2;
 const float EtaCut = 1.0;
 // const float cenDef27[9] = {12.86,12.02,11.13,10.17,9.1,7.89,6.44,4.56,3.23};//27 GeV Au+Au
+const float cenDef200[9] = {13.42,12.55,11.66,10.27,8.47,7.42,6.28,3.64,2.59};
 const float cenDef27[9] = {12.85, 12.02, 11.14, 10.17, 9.1, 7.88, 6.44, 4.56, 3.24};
 const float cenDef19[9] = {12.83, 12, 11.12, 10.15, 9.08, 7.85, 6.42, 4.54, 3.2};
+const float cenDef14[9] = {12.82, 11.98, 11.09, 10.13, 9.05, 7.84, 6.39, 4.52, 3.2};
 const float cenDef7[9] = {12.81, 11.98, 11.1, 10.13, 9.07, 7.86, 6.41, 4.52, 3.2};
 
 //{13.14,12.29,11.38,10.39,9.29,8.05,6.57,4.65,3.29};   // 200 GeV Au+Au
 //{12.83, 12, 11.12, 10.15, 9.08, 7.85, 6.42, 4.54, 3.2} //19Gev-19M
 //{12.85, 12.02, 11.14, 10.17, 9.1, 7.88, 6.44, 4.56, 3.24} //27GeV-10M-2
 //{12.81, 11.98, 11.1, 10.13, 9.07, 7.86, 6.41, 4.52, 3.2} //7GeV-8k
-const Int_t total_jobs = 10;//this is to control the portion of data you prefer to run, data format is  xxx[job][min]1.root
-const Int_t total_min = 10;//this is to control the portion of data you prefer to run
+const Int_t total_jobs = 1;//this is to control the portion of data you prefer to run, data format is  xxx[job][min]1.root
+const Int_t total_min = 1;//this is to control the portion of data you prefer to run
 
 // string data_path = "/media/Disk_YIN/AMPT-7GeV/7GeV-8k";
 // /media/Disk_YIN/AMPT-27GeV/27GeV-10M-2/
-// /media/Disk_YIN/AMPT-19GeV/19GeV-19M
+// /media/Disk_YIN/AMPT-19GeV/19GeV-19M/
 // /media/Disk_YIN/AMPT-7GeV/7GeV-8k/
+// /media/Disk_YIN/AMPT-200GeV/200GeV-cleaned/200GeV-data2055/
+// /media/Disk_YIN/AMPT-14GeV/14GeV-cleaned/14GeV-8k/
+
 void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min = 1){    //main_function
         TStopwatch timer; // Times the current min
         timer.Start();
@@ -55,10 +61,12 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
         timer2.Start();
         float cenDef[9];
         const float* cen_index;
-        if (e == 27) cen_index = cenDef27;
+        if (e == 200) cen_index = cenDef200;
+        else if (e == 27) cen_index = cenDef27;
         else if (e == 19) cen_index = cenDef19;
+        else if (e == 14) cen_index = cenDef14;
         else if (e == 7) cen_index = cenDef7;
-        else std::cerr << "Invalid energy!" << std::endl;
+        else std::cerr << "Invalid energy" << std::endl;
         copy(cen_index, cen_index+9, cenDef);
         cout<<job<<"\t"<<min<<endl;
 
@@ -68,8 +76,7 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
         // Wherever your data is stored
         // sprintf(fname_in1,"/media/Disk_YIN/AMPT-27GeV/v27-9977/*%d%d1.root",job,min);//one data set
         // sprintf(fname_in1,"/media/Disk_YIN/AMPT-7GeV/7GeV-8k/*%d%d1.root",job,min);//one data set
-        sprintf(fname_in1,"%s*%d%d1.root",path.c_str(), job,min);//one data set
-
+        sprintf(fname_in1,"%s*%d%d1.root",path.c_str(), job,min); //generalized data set
         // nfile counts number of files ending in "[job][min].root"
         nfile += chain->Add(fname_in1); 
         
@@ -99,7 +106,7 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
         Int_t   Centrality, NPTracks;   //event info
         Float_t psi, b, Eta, Theta, Phi, Pt;            //track info    
         Float_t Px, Py, Pz;//track info
-
+        //1-2%
         //defining histograms
         // Anything you need add here 
         TH1D *hCentrality = new TH1D("hCentrality","hCentrality",10,0,10);
@@ -107,9 +114,11 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
         TH1D *hMult = new TH1D("hMult","hMult",1000,-0.5,999.5);
         TProfile *p_npp = new TProfile("p_npp","p_npp",10,-0.5,9.5,0,500); 
         TProfile *p_v2 = new TProfile("p_v2","p_v2",10,-0.5,9.5,-100,100);
-        
+        TH1D *hist_y = new TH1D("hist_y","hist_y", 100, -5, 5);
+
         Int_t nentries = chain->GetEntries();
         //loop through events, one data set usually contains 2000 events
+        
         for(int i = 0; i < nentries; i++){ //loop through all events 
                 
                 if((i+1)%10000==0) {
@@ -130,7 +139,7 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
                 int Np = leaf_Np_p->GetValue(0) + leaf_Np_t->GetValue(0);
                 if(Np<3) continue;
 
-                psi = 0; //true reation plane
+                psi = 0; //true reaction plane
                 b = leaf_b->GetValue(0);//impact parameter
                 NPTracks= px_vec->size();//total tracks in one event
 
@@ -141,7 +150,29 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
                 hCentrality->Fill(Centrality);
                 if(cen && Centrality != cen) continue;          
                 int Qcount =0;
-         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                // float EtaCutLo; EtaCutHi;
+                // if (e == 27) 
+                // {
+                //         EtaCutLo = 3.8; 
+                //         EtaCutHi = 5.1;
+                // }
+                // else if (e == 19) 
+                // {
+                //         EtaCutLo = 3.2;
+                //         EtaCutHi = 5.1;
+                // }
+                // else if (e == 14)
+                // {
+                //         EtaCutLo = 3.0; 
+                //         EtaCutHi = 5.1;
+                // } 
+                // else if (e == 7) 
+                // {
+                //         EtaCutLo = 2.3;
+                //         EtaCutHi = 5.1;
+                // }
+                TDatabasePDG *pdg = TDatabasePDG::Instance();
                 //loop through matched primary tracks (the POI)
                 for(int trki = 0; trki < NPTracks; trki++){
                         Px    = px_vec->at(trki);
@@ -149,27 +180,41 @@ void Sample_code(int e = 0, string path = "", int cen = 5, int job = 3, int min 
                         Pz    = pz_vec->at(trki);
                         float PID   = pid_vec->at(trki);
 
+                        TParticlePDG *particle = pdg->GetParticle(PID);
+                        Double_t mass;
+                        if (particle)
+                        {
+                                mass = particle->Mass(); 
+                        }
+                        else if (abs(PID) != 42)
+                        {
+                                std::cerr<<"PID: "<<PID<<" particle not found"<<endl;
+                        }
                         Pt = sqrt(Px*Px+Py*Py);
                         Phi = atan2(Py,Px);
                         Theta = atan2(Pt,Pz);
                         Eta = -log(tan(Theta/2.));
 
-                        if(PID!= 211 && PID!=-211 ) continue;//only pions
+                        float E = sqrt(Pt*Pt + Pz*Pz + mass*mass);
+                        float y = 0.5*log((E+Pz)/(E-Pz));
+
+                        // if(PID!= 211 && PID!=-211 ) continue;//only pions
+                        if (PID != 321 && PID != -321 && PID != 310 && PID != 311) continue; // only kaons
+                        // if (abs(PID) == 211) EtaCutLo = -1*EtaCut; EtaCutHi = EtaCut;
+                        // if (PID == 42) continue;
+                        // if (abs(PID) != 2212 && abs(PID) != 2112) continue;
                         if(Pt > pt_trig_up || Pt < pt_trig_lo) continue;
                         if(Eta > EtaCut || Eta < -1*EtaCut) continue; // -1 < eta < 1
 
                 //add whatever your analysis here, i.e.
                         float v2a =  cos(2.*Phi - 2.*psi)*100;
                         p_v2->Fill(1,v2a); //averages the v2a over the POI
+                        hist_y->Fill(y);
                         Qcount++;
-
+                
                 }  //Track
 
-                //add your histogram here
-
-
         } // Event
-
 
         timer.Stop();
         std::cout<<"The time of min "<<min<<": ";
@@ -191,7 +236,6 @@ void file_looper(int e = 0, string path = "", Int_t centrality_select = 1, Int_t
         // while(centrality_select <= 9) //change to 1 for cen1.. run cen5 compare
         while(centrality_select <= 9)
         {
-                // timer.Start();
                 // Directory where the data will be stored
                 char folder_name[200];
                 // sprintf(folder_name, "/media/Disk_YIN/Andrew/New_Cuts/new_cen%dresults_newCuts",centrality_select);
@@ -215,8 +259,6 @@ void file_looper(int e = 0, string path = "", Int_t centrality_select = 1, Int_t
                 min_select = 0;
                 gSystem->cd("/media/Disk_YIN/Andrew/");
                 centrality_select++;
-                // timer.Stop();
-                // timer.Print("milli");
         }
         
         return;
