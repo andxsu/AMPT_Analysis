@@ -1,19 +1,8 @@
-1. source root
-. /usr/local/root6/root_build/bin/thisroot.sh
+This script will loop through centralities 1-9 for a specific energy and merge the root files produced in the path "../New_Cuts/" (you can change this).
 
+To Run:
+bash or ./merge.sh
 
-2.edit your target root file names in 
-combineResults_simple.pl 
-line #28
+The merged files are in the format: cen#_energy.merge.root. 
 
-3. to run,
-bash merge.sh
-
-the merged file would be: ntuple.merge.root
-remember to rename it to different name
-cen5.AMPT.root before merge data of another centrality, i.e.
-mv ntuple.merge.root cen5.AMPT.root
-
-4. download
-scp -r zhiwanxu@169.232.156.45:/media/Disk_YIN/AMPT-200GeV/cen5.AMPT_Correlation_job100.root .
-
+If you want to do another energy, change "my $energy = 7;" in line 37 to whatever energy you want. 
